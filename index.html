@@ -15,6 +15,7 @@
       integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
       crossorigin="anonymous"
     ></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <title>The answer the ajax</title>
     <style>
       @media (max-width: 576px) {
@@ -32,8 +33,16 @@
     <div class="container">
       <h1 style="text-align: center">Choose the correct car</h1>
       <div class="d-flex justify-content-around mt-5 content">
+      
         <select name="year" id="year">
-          <option value="">Select Year</option>
+          <option value="hey">Select Year</option>
+          <option value="">1993</option>
+          <option value="">2015</option>
+          <option value="">2016</option>
+          <option value="">2017</option>
+          <option value="">2018</option>
+          <option value="">2019</option>
+          <option value="">2020</option>
         </select>
         <select name="make" id="make">
           <option value="">Select Make</option>
@@ -47,4 +56,37 @@
       </div>
     </div>
   </body>
+
+  <script>
+    $(document).ready(function () {
+      let makeHtml;
+
+      $("#year").change(function () {
+      let year = $("#year").find(":selected").text();
+        GetMakes(year);
+      });
+
+    
+
+      function GetMakes(year) {
+        $.ajax({
+          url: `https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForManufacturerAndYear/mer?year=${year}&format=json`,
+
+          method: "GET",
+        }).then(function (response) {
+          let allMakes = response.Results;
+          console.log(allMakes);
+          if (year == 1993) {
+            makeHtml += `<option value="Mazda">Mazda</option>`;
+          } else {
+            $.each(allMakes, function (key, value) {
+              makeHtml += `<option value=${value.MakeId}>${value.MakeName}</option>`;
+            });
+          }
+          $("#make").append(makeHtml);
+        });
+      }
+    });
+    
+  </script>
 </html>
