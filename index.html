@@ -84,10 +84,31 @@
             year = $("#year").find(":selected").text();
             $("#model").empty().append('<option value="">Select Model</option>')
            
-       
+            if (make == "BMW") {
+          $("h3").text("Excellent Choice!");
+        } else if (make == "Mazda") {
+          $("h3").text("Getting Closer");
+        } else{
+          $("h3").text("Wrong");
+        }
 
 
             GetModel(year, make);
+          });
+
+
+          $("#model").change(function () {
+            model = $("#model").find(":selected").text();
+          
+           
+            if (model[0] == "M") {
+          $("h3").text("Perfect Choice!");
+        } else if (model == "RX-7") {
+          $("h3").text("WENKEL WENKEL WENKEL");
+        } 
+
+
+            
           });
 
           function GetMakes(year) {
