@@ -62,95 +62,89 @@
   </body>
 
   <script>
-        $(document).ready(function () {
-          let makeHtml;
-          let modelHtml;
-          let year;
-          let make;
+    $(document).ready(function () {
+      let makeHtml;
+      let modelHtml;
+      let year;
+      let make;
 
-          $("#year").change(function () {
-            var year = $("#year").find(":selected").text();
+      $("#year").change(function () {
+        var year = $("#year").find(":selected").text();
 
-            $("#make").empty().append('<option value="">Select Make</option>')
-            $("#model").empty().append('<option value="">Select Model</option>')
+        $("#make").empty().append('<option value="">Select Make</option>');
+        $("#model").empty().append('<option value="">Select Model</option>');
+        $("#results").empty();
 
+        GetMakes(year);
+      });
 
+      $("#make").change(function () {
+        make = $("#make").find(":selected").text();
+        year = $("#year").find(":selected").text();
+        $("#model").empty().append('<option value="">Select Model</option>');
+        $("#results").empty();
 
-            GetMakes(year);
-          });
-
-          $("#make").change(function () {
-            make = $("#make").find(":selected").text();
-            year = $("#year").find(":selected").text();
-            $("#model").empty().append('<option value="">Select Model</option>')
-           
-            if (make == "BMW") {
+        if (make == "BMW") {
           $("h3").text("Excellent Choice!");
         } else if (make == "Mazda") {
           $("h3").text("Getting Closer");
-        } else{
+        } else {
           $("h3").text("Wrong");
         }
 
+        GetModel(year, make);
+      });
 
-            GetModel(year, make);
-          });
+      $("#model").change(function () {
+        model = $("#model").find(":selected").text();
 
-
-          $("#model").change(function () {
-            model = $("#model").find(":selected").text();
-          
-           
-            if (model[0] == "M") {
+        if (model[0] == "M") {
           $("h3").text("Perfect Choice!");
         } else if (model == "RX-7") {
           $("h3").text("WENKEL WENKEL WENKEL");
-        } 
+        }
+      });
 
+      function GetMakes(year) {
+        $.ajax({
+          url: `https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForManufacturerAndYear/mer?year=${year}&format=json`,
 
-            
-          });
-
-          function GetMakes(year) {
-            $.ajax({
-              url: `https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForManufacturerAndYear/mer?year=${year}&format=json`,
-
-              method: "GET",
-            }).then(function (response) {
-                makeHtml = "";
-              let allMakes = response.Results;
-              if (year == 1993) {
-                makeHtml += `<option value="Mazda">Mazda</option>`;
-              } else {
-                $.each(allMakes, function (key, value) {
-                  makeHtml += `<option value=${value.MakeId}>${value.MakeName}</option>`;
-                });
-              }
-              $("#make").append(makeHtml);
+          method: "GET",
+        }).then(function (response) {
+          makeHtml = "";
+          let allMakes = response.Results;
+          if (year == 1993) {
+            makeHtml += `<option value="Mazda">Mazda</option>`;
+          } else {
+            $.each(allMakes, function (key, value) {
+              makeHtml += `<option value=${value.MakeId}>${value.MakeName}</option>`;
             });
           }
-
-          function GetModel(year, make) {
-            console.log("Get Model");
-
-            $.ajax({
-              url: `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformakeyear/make/${make}/modelyear/${year}?format=json`,
-
-              method: "GET",
-            }).then(function (response) {
-                modelHtml = "";
-
-              let allModels = response.Results;
-              if (year == 1993) {
-                modelHtml = `<option value="Mazda">RX-7</option>`;
-              } else {
-                $.each(allModels, function (key, value) {
-                  modelHtml += `<option value=${value.Model_ID}>${value.Model_Name}</option>`;
-                });
-              }
-              $("#model").append(modelHtml);
-            });
-          }
+          $("#make").append(makeHtml);
         });
+      }
+
+      function GetModel(year, make) {
+        console.log("Get Model");
+
+        $.ajax({
+          url: `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformakeyear/make/${make}/modelyear/${year}?format=json`,
+
+          method: "GET",
+        }).then(function (response) {
+          modelHtml = "";
+
+          let allModels = response.Results;
+          if (year == 1993) {
+            modelHtml = `<option value="Mazda">RX-7</option>`;
+          } else {
+            $.each(allModels, function (key, value) {
+              modelHtml += `<option value=${value.Model_ID}>${value.Model_Name}</option>`;
+            });
+          }
+          $("#model").append(modelHtml);
+        });
+      }
+    });
   </script>
 </html>
