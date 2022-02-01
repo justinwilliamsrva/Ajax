@@ -18,6 +18,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <title>The answer the ajax</title>
     <style>
+      h3 {
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+      }
       @media (max-width: 576px) {
         .content {
           display: flex;
@@ -33,7 +38,6 @@
     <div class="container">
       <h1 style="text-align: center">Choose the correct car</h1>
       <div class="d-flex justify-content-around mt-5 content">
-      
         <select name="year" id="year">
           <option value="hey">Select Year</option>
           <option value="">1993</option>
@@ -52,41 +56,80 @@
         </select>
       </div>
       <div style="height: 6rem" class="border mt-5">
-        <h3 id="results"></h3>
+        <h3 style="text-align: center" id="results"></h3>
       </div>
     </div>
   </body>
 
   <script>
-    $(document).ready(function () {
-      let makeHtml;
+        $(document).ready(function () {
+          let makeHtml;
+          let modelHtml;
+          let year;
+          let make;
 
-      $("#year").change(function () {
-      let year = $("#year").find(":selected").text();
-        GetMakes(year);
-      });
+          $("#year").change(function () {
+            var year = $("#year").find(":selected").text();
 
-    
+            $("#make").empty().append('<option value="">Select Make</option>')
+            $("#model").empty().append('<option value="">Select Model</option>')
 
-      function GetMakes(year) {
-        $.ajax({
-          url: `https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForManufacturerAndYear/mer?year=${year}&format=json`,
 
-          method: "GET",
-        }).then(function (response) {
-          let allMakes = response.Results;
-          console.log(allMakes);
-          if (year == 1993) {
-            makeHtml += `<option value="Mazda">Mazda</option>`;
-          } else {
-            $.each(allMakes, function (key, value) {
-              makeHtml += `<option value=${value.MakeId}>${value.MakeName}</option>`;
+
+            GetMakes(year);
+          });
+
+          $("#make").change(function () {
+            make = $("#make").find(":selected").text();
+            year = $("#year").find(":selected").text();
+            $("#model").empty().append('<option value="">Select Model</option>')
+           
+       
+
+
+            GetModel(year, make);
+          });
+
+          function GetMakes(year) {
+            $.ajax({
+              url: `https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForManufacturerAndYear/mer?year=${year}&format=json`,
+
+              method: "GET",
+            }).then(function (response) {
+                makeHtml = "";
+              let allMakes = response.Results;
+              if (year == 1993) {
+                makeHtml += `<option value="Mazda">Mazda</option>`;
+              } else {
+                $.each(allMakes, function (key, value) {
+                  makeHtml += `<option value=${value.MakeId}>${value.MakeName}</option>`;
+                });
+              }
+              $("#make").append(makeHtml);
             });
           }
-          $("#make").append(makeHtml);
+
+          function GetModel(year, make) {
+            console.log("Get Model");
+
+            $.ajax({
+              url: `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformakeyear/make/${make}/modelyear/${year}?format=json`,
+
+              method: "GET",
+            }).then(function (response) {
+                modelHtml = "";
+
+              let allModels = response.Results;
+              if (year == 1993) {
+                modelHtml = `<option value="Mazda">RX-7</option>`;
+              } else {
+                $.each(allModels, function (key, value) {
+                  modelHtml += `<option value=${value.Model_ID}>${value.Model_Name}</option>`;
+                });
+              }
+              $("#model").append(modelHtml);
+            });
+          }
         });
-      }
-    });
-    
   </script>
 </html>
