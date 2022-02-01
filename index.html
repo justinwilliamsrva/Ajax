@@ -97,8 +97,9 @@
 
       $("#model").change(function () {
         model = $("#model").find(":selected").text();
+        make = $("#make").find(":selected").text();
 
-        if (model[0] == "M") {
+        if (model[0] == "M" && make == "BMW") {
           $("h3").text("Perfect Choice!");
         } else if (model == "RX-7") {
           $("h3").text("WENKEL WENKEL WENKEL");
@@ -135,7 +136,7 @@
           modelHtml = "";
 
           let allModels = response.Results;
-          if (year == 1993) {
+          if (make == "Mazda") {
             modelHtml = `<option value="Mazda">RX-7</option>`;
           } else {
             $.each(allModels, function (key, value) {
